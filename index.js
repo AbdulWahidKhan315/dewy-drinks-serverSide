@@ -27,6 +27,7 @@ async function run() {
         await client.connect();
 
         const brandCollection = client.db("dewyDrinks").collection("brands")
+        const productCollection = client.db("dewyDrinks").collection("products")
 
         app.post('/brands', async(req,res)=>{
             const brandInfo = req.body;
@@ -37,6 +38,12 @@ async function run() {
         app.get('/brands',async(req,res)=>{
             const cursor = brandCollection.find();
             const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        app.post('/products',async(req,res)=>{
+            const products = req.body;
+            const result = await productCollection.insertOne(products);
             res.send(result)
         })
 
