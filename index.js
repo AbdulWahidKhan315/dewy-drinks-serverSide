@@ -9,7 +9,7 @@ app.use(express.json())
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.oiitlmi.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -28,10 +28,27 @@ async function run() {
 
         const brandCollection = client.db("dewyDrinks").collection("brands")
         const productCollection = client.db("dewyDrinks").collection("products")
+        const addToCartCollection = client.db("dewyDrinks").collection("addToCart")
 
-        app.post('/productDetails', async(req,res)=>{
-            const brandInfo = req.body;
-            const result = await productDetailsCollection.insertOne(brandInfo);
+        app.post('/addToCart', async(req,res)=>{
+            const cartInfo = req.body;
+            const result = await addToCartCollection.insertOne(cartInfo);
+            res.send(result)
+        })
+
+        app.get('/addToCart/myCart/:Email',async(req,res)=>{
+            const Email = req.params.Email;
+            const query = {email: Email};
+            const cursor = addToCartCollection.find(query);
+            const result = await cursor.toArray();
+            console.log(result)
+            res.send(result)
+        })
+
+        app.delete('/addToCart/myCart/:id',async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            const result = await addToCartCollection.deleteOne(query);
             res.send(result);
         })
 
