@@ -29,9 +29,9 @@ async function run() {
         const brandCollection = client.db("dewyDrinks").collection("brands")
         const productCollection = client.db("dewyDrinks").collection("products")
 
-        app.post('/brands', async(req,res)=>{
+        app.post('/productDetails', async(req,res)=>{
             const brandInfo = req.body;
-            const result = await brandCollection.insertOne(brandInfo);
+            const result = await productDetailsCollection.insertOne(brandInfo);
             res.send(result);
         })
 
@@ -46,6 +46,12 @@ async function run() {
             const query = {brandName: name};
             const cursor = productCollection.find(query)
             const result = await cursor.toArray();
+            res.send(result)
+        })
+        app.get('/products/productName/:Pname',async(req,res)=>{
+            const Pname = req.params.Pname;
+            const query = {productName: Pname};
+            const result = await productCollection.findOne(query)
             res.send(result)
         })
 
