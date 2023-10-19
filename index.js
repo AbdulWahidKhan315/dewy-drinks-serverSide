@@ -36,10 +36,8 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/addToCart/myCart/:Email',async(req,res)=>{
-            const Email = req.params.Email;
-            const query = {email: Email};
-            const cursor = addToCartCollection.find(query);
+        app.get('/myCart',async(req,res)=>{
+            const cursor = addToCartCollection.find();
             const result = await cursor.toArray();
             console.log(result)
             res.send(result)
@@ -55,6 +53,33 @@ async function run() {
         app.get('/brands',async(req,res)=>{
             const cursor = brandCollection.find();
             const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        app.get('/updateProduct/:id',async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            const result = await productCollection.findOne(query);
+            res.send(result)
+        })
+
+        app.put('/updateProduct/:id',async(req,res)=>{
+            const id = req.params.id;
+            const product = req.body;
+            const filter = {_id: new ObjectId(id)};
+            const options = {upsert:true};
+            const updateProductInDb = {
+                $set:{
+                    productName: product.productName,
+                    brandName: product.brandName,
+                    type: product.type,
+                    price: product.price,
+                    shortDescription: product.shortDescription,
+                    rating: product.rating,
+                    image: product.image
+                }
+            } 
+            const result = await productCollection.updateOne(filter,updateProductInDb,options);
             res.send(result)
         })
 
